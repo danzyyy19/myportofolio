@@ -2,12 +2,16 @@ import { auth } from "@/auth";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { LayoutDashboard, Settings, UserCircle, Briefcase, GraduationCap, LayoutTemplate, Inbox } from "lucide-react";
+import { LayoutDashboard, Settings, UserCircle, Briefcase, GraduationCap, LayoutTemplate, Inbox, Link as LinkIcon, ExternalLink } from "lucide-react";
 import { AdminSignOut } from "./sign-out-button";
 import { AdminMobileNav } from "./mobile-nav";
+import { db } from "@/lib/db";
+import { eq } from "drizzle-orm";
+import * as schema from "@/lib/db/schema";
 
 const navItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "Profile & Link", href: "/admin/profile", icon: LinkIcon },
   { name: "Settings", href: "/admin/settings", icon: Settings },
   { name: "Summary", href: "/admin/summary", icon: UserCircle },
   { name: "Experience", href: "/admin/experience", icon: Briefcase },
@@ -38,14 +42,21 @@ export default async function AdminLayout({
     );
   }
 
+  const userProfile = await db.query.user.findFirst({
+      where: eq(schema.user.id, session.user.id),
+      columns: { name: true, username: true }
+  });
+
+  const displayName = userProfile?.name?.split(" ")[0] || "User";
+
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex w-64 border-r border-border bg-background flex-col fixed inset-y-0 left-0 z-40">
         <div className="p-6 border-b border-border">
-          <Link href="/" className="font-serif text-2xl text-foreground hover:text-accent transition-colors">
-            DANI<span className="text-accent">.DEV</span>
-            <span className="block font-mono text-[10px] text-muted-foreground tracking-widest mt-1 uppercase">Admin</span>
+          <Link href="/admin" className="font-serif text-2xl text-foreground hover:text-accent transition-colors">
+            {displayName.toUpperCase()}
+            <span className="block font-mono text-[10px] text-muted-foreground tracking-widest mt-1 uppercase">Admin Panel</span>
           </Link>
         </div>
 
@@ -66,6 +77,13 @@ export default async function AdminLayout({
         </nav>
 
         <div className="p-3 border-t border-border space-y-3">
+          {userProfile?.username && (
+            <div className="px-2 mb-2">
+              <Link href={`/${userProfile.username}`} target="_blank" className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-accent/10 text-accent hover:bg-accent/20 rounded-lg text-sm font-medium transition-colors">
+                <ExternalLink className="w-4 h-4" /> Preview Online
+              </Link>
+            </div>
+          )}
           <div className="flex items-center justify-between px-4 py-2">
             <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">Theme</span>
             <ThemeToggle />
@@ -77,15 +95,18 @@ export default async function AdminLayout({
       {/* Mobile Top Header */}
       <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-background sticky top-0 z-40">
         <Link href="/admin" className="font-serif text-xl text-foreground">
-          DANI<span className="text-accent">.DEV</span>
+          {displayName.toUpperCase()}
         </Link>
-        <Link 
-          href="/" 
-          className="flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-accent transition-colors bg-muted/50 px-3 py-1.5 rounded-full border border-border"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          Ke Web
-        </Link>
+        {userProfile?.username && (
+            <Link 
+            href={`/${userProfile.username}`}
+            target="_blank"
+            className="flex items-center gap-2 text-xs font-medium text-accent hover:text-accent/80 transition-colors bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20"
+            >
+            <ExternalLink className="w-3 h-3" />
+            Preview
+            </Link>
+        )}
       </div>
 
       {/* Mobile Bottom Navigation */}

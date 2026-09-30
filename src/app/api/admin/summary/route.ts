@@ -9,14 +9,16 @@ import { headers } from 'next/headers';
 async function requireAuth() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error('Unauthorized');
+  return session;
 }
 
 
 export async function PUT(req: Request) {
   try {
-    await requireAuth();
+    const session = await requireAuth();
     const body = await req.json();
-    const summary = await db.select().from(schema.professionalSummary).limit(1);
+    body.userId = session.user.id;
+    const summary = await db.select().from(schema.professionalSummary).where(eq(schema.professionalSummary.userId, session.user.id)).limit(1);
     if (summary.length > 0) {
       const [updated] = await db.update(schema.professionalSummary).set({ content: body.content, updatedAt: new Date() }).where(eq(schema.professionalSummary.id, summary[0].id)).returning();
       return NextResponse.json(updated);

@@ -20,13 +20,13 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Dani — Staff Administrasi & Developer',
-  description: 'Staff Administrasi berpengalaman di Manufaktur & Pergudangan dengan keahlian IT & pemrograman. Spesialis otomasi data, pelaporan produksi, dan pengembangan web.',
-  keywords: ['portfolio', 'staff administrasi', 'developer', 'manufaktur', 'pergudangan', 'Dani'],
-  authors: [{ name: 'Dani' }],
+  title: 'PortofolioBuilder — The Ultimate Developer Portfolio',
+  description: 'Platform pembuatan portofolio khusus untuk developer dan desainer. Fokus pada karya, kami yang urus desain dan hostingnya.',
+  keywords: ['portfolio', 'developer', 'designer', 'saas', 'builder', 'website'],
+  authors: [{ name: 'PortofolioBuilder' }],
   openGraph: {
-    title: 'Dani — Staff Administrasi & Developer',
-    description: 'Staff Administrasi berpengalaman di Manufaktur & Pergudangan dengan keahlian IT & pemrograman.',
+    title: 'PortofolioBuilder — The Ultimate Developer Portfolio',
+    description: 'Platform pembuatan portofolio khusus untuk developer dan desainer.',
     type: 'website',
   },
 };

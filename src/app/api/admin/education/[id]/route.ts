@@ -9,14 +9,16 @@ import { headers } from 'next/headers';
 async function requireAuth() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error('Unauthorized');
+  return session;
 }
 
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    await requireAuth();
+    const session = await requireAuth();
     const id = parseInt((await params).id, 10);
     const body = await req.json();
+    body.userId = session.user.id;
     const [updated] = await db.update(schema.education).set(body).where(eq(schema.education.id, id)).returning();
     return NextResponse.json(updated);
   } catch (e) { return NextResponse.json({ error: 'Unauthorized' }, { status: 401 }); }
@@ -24,7 +26,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    await requireAuth();
+    const session = await requireAuth();
     const id = parseInt((await params).id, 10);
     await db.delete(schema.education).where(eq(schema.education.id, id));
     return NextResponse.json({ success: true });

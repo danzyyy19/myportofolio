@@ -30,9 +30,15 @@ export default function SettingsPage() {
   });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [initialLoading, setInitialLoading] = useState(true);
+  const [session, setSession] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
+    async function fetchSession() {
+      const sess = await getSession();
+      setSession(sess);
+    }
+    fetchSession();
     async function fetchSettings() {
       try {
         const res = await fetch(`/api/portfolio/settings`);
@@ -161,6 +167,8 @@ export default function SettingsPage() {
                     showSkipCropButton: false,
                     multiple: false,
                     clientAllowedFormats: ["image"],
+                    maxFileSize: 200000,
+                    folder: session?.user?.id ? `saas_portofolios/${session.user.id}` : "saas_portofolios",
                   }}
                   onSuccess={(result: any) => {
                     setFormData({ ...formData, profileImageUrl: result.info.secure_url });
@@ -377,6 +385,7 @@ export default function SettingsPage() {
                   maxFileSize: 5000000,
                   multiple: false,
                   sources: ["local", "url"],
+                  folder: session?.user?.id ? `saas_portofolios/${session.user.id}/docs` : "saas_portofolios/docs",
                 }}
                 onSuccess={(result: any) => {
                   setFormData({ ...formData, cvFileUrl: result.info.secure_url });

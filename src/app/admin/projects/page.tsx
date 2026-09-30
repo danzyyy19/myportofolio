@@ -28,9 +28,15 @@ export default function ProjectsPage() {
     sortOrder: 0
   });
 
+  const [session, setSession] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
+    async function fetchSession() {
+      const sess = await getSession();
+      setSession(sess);
+    }
+    fetchSession();
     fetchProjects();
   }, []);
 
@@ -341,6 +347,8 @@ export default function ProjectsPage() {
                         options={{
                           multiple: true,
                           clientAllowedFormats: ["image"],
+                          maxFileSize: 200000,
+                          folder: session?.user?.id ? `saas_portofolios/${session.user.id}/projects` : "saas_portofolios/projects",
                         }}
                         onSuccess={(result: any) => {
                           setFormData(prev => ({ 

@@ -22,6 +22,7 @@ export const users = pgTable('users', {
 // ─── SITE SETTINGS (hero, contact, CV) ───────────────────────
 export const siteSettings = pgTable('site_settings', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id),
   heroName: varchar('hero_name', { length: 255 }).notNull(),
   heroRole: text('hero_role').notNull(),
   contactLocation: varchar('contact_location', { length: 255 }),
@@ -44,6 +45,7 @@ export const siteSettings = pgTable('site_settings', {
 // ─── PROFESSIONAL SUMMARY ────────────────────────────────────
 export const professionalSummary = pgTable('professional_summary', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id),
   content: text('content').notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -51,6 +53,7 @@ export const professionalSummary = pgTable('professional_summary', {
 // ─── SKILL CATEGORIES & SKILLS ───────────────────────────────
 export const skillCategories = pgTable('skill_categories', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id),
   name: varchar('name', { length: 255 }).notNull(),
   sortOrder: integer('sort_order').default(0).notNull(),
 });
@@ -67,6 +70,7 @@ export const skills = pgTable('skills', {
 // ─── COMPANIES & EXPERIENCES ─────────────────────────────────
 export const companies = pgTable('companies', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id),
   name: varchar('name', { length: 255 }).notNull(),
   location: varchar('location', { length: 255 }),
   sortOrder: integer('sort_order').default(0).notNull(),
@@ -74,6 +78,7 @@ export const companies = pgTable('companies', {
 
 export const experiences = pgTable('experiences', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id),
   companyId: integer('company_id')
     .references(() => companies.id, { onDelete: 'cascade' })
     .notNull(),
@@ -95,6 +100,7 @@ export const experienceBullets = pgTable('experience_bullets', {
 // ─── EDUCATION ───────────────────────────────────────────────
 export const education = pgTable('education', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id),
   institution: varchar('institution', { length: 255 }).notNull(),
   major: varchar('major', { length: 255 }),
   location: varchar('location', { length: 255 }),
@@ -106,6 +112,7 @@ export const education = pgTable('education', {
 // ─── PROJECTS ────────────────────────────────────────────────
 export const projects = pgTable('projects', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id),
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description').notNull(),
   techStack: text('tech_stack'), // comma-separated or JSON
@@ -121,6 +128,7 @@ export const projects = pgTable('projects', {
 // ─── CONTACT MESSAGES ────────────────────────────────────────
 export const contactMessages = pgTable('contact_messages', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id),
   name: varchar('name', { length: 255 }).notNull(),
   email: varchar('email', { length: 255 }).notNull(),
   message: text('message').notNull(),
@@ -170,6 +178,7 @@ export const experienceBulletsRelations = relations(
 );
 export const user = pgTable("user", {
 					id: text("id").primaryKey(),
+					username: text('username').unique(),
 					name: text('name').notNull(),
 					email: text('email').notNull().unique(),
 					emailVerified: boolean('email_verified').notNull(),

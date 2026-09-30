@@ -4,6 +4,9 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Settings, UserCircle, Briefcase, GraduationCap, LayoutTemplate, ArrowRight } from "lucide-react";
+import { db } from '@/lib/db';
+import * as schema from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 
 function AdminSection({ title, description, href, icon: Icon }: { title: string, description: string, href: string, icon: any }) {
   return (
@@ -31,6 +34,14 @@ export default async function AdminDashboard() {
     redirect("/admin/login");
   }
 
+  const userProfile = await db.query.user.findFirst({
+      where: eq(schema.user.id, session.user.id)
+  });
+
+  if (!userProfile?.username) {
+      redirect("/admin/profile");
+  }
+
   return (
     <div>
       <div className="mb-12">
@@ -49,6 +60,12 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <AdminSection 
+          title="Profile & Link" 
+          description="Claim or update your unique portfolio URL." 
+          href="/admin/profile"
+          icon={UserCircle} 
+        />
         <AdminSection 
           title="General Settings" 
           description="Manage your main profile details, hero section text, contact information, and CV document." 

@@ -52,10 +52,10 @@ export function Navbar() {
             className="flex items-center gap-2 group"
           >
             <div className="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center group-hover:bg-accent/20 transition-colors duration-300">
-              <span className="text-accent font-bold text-sm">D</span>
+              <span className="text-accent font-bold text-sm">P</span>
             </div>
             <span className="font-mono-ui text-sm font-semibold tracking-wide text-foreground">
-              dani<span className="text-accent">.dev</span>
+              Porto<span className="text-accent">folio</span>
             </span>
           </a>
 

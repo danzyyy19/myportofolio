@@ -1,3 +1,4 @@
+import { eq } from 'drizzle-orm';
 
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
@@ -8,13 +9,15 @@ import { headers } from 'next/headers';
 async function requireAuth() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) throw new Error('Unauthorized');
+  return session;
 }
 
 
 export async function POST(req: Request) {
   try {
-    await requireAuth();
+    const session = await requireAuth();
     const body = await req.json();
+    const userId = session.user.id;
     
     // In NestJS, AdminService.createExperience handles company, experience, and bullets.
     // Assuming the body has companyName, companyLocation, jobTitle, period, description, bullets.
@@ -22,6 +25,7 @@ export async function POST(req: Request) {
     let companyId = body.companyId;
     if (body.companyName) {
       const [company] = await db.insert(schema.companies).values({
+        userId,
         name: body.companyName,
         location: body.companyLocation,
       }).returning();
@@ -29,10 +33,12 @@ export async function POST(req: Request) {
     }
     
     const [exp] = await db.insert(schema.experiences).values({
+      userId,
       companyId: companyId,
       jobTitle: body.jobTitle,
       period: body.period,
       description: body.description,
+      sortOrder: body.sortOrder || 0,
     }).returning();
     
     if (body.bullets && body.bullets.length > 0) {
@@ -45,6 +51,9 @@ export async function POST(req: Request) {
       );
     }
     return NextResponse.json(exp);
-  } catch (e) { return NextResponse.json({ error: 'Unauthorized' }, { status: 401 }); }
+  } catch (e: any) { 
+    console.error("Error creating experience:", e);
+    return NextResponse.json({ error: e.message || 'Server error' }, { status: 500 }); 
+  }
 }
 

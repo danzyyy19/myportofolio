@@ -18,6 +18,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "Profile & Link", href: "/admin/profile", icon: LayoutTemplate },
   { name: "Settings", href: "/admin/settings", icon: Settings },
   { name: "Summary", href: "/admin/summary", icon: UserCircle },
   { name: "Experience", href: "/admin/experience", icon: Briefcase },

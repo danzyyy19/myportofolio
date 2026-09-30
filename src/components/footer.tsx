@@ -11,7 +11,7 @@ export function Footer({ data }: { data?: any }) {
         <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 text-sm text-muted-foreground">
           <div className="flex items-center gap-2 font-mono tracking-wide text-xs uppercase">
             <span>© {currentYear}</span>
-            <span className="text-foreground font-semibold">{data?.heroName || "Dani"}</span>
+            <span className="text-foreground font-semibold">{data?.heroName || "Portfolio"}</span>
           </div>
           <span className="hidden sm:inline">·</span>
           <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
