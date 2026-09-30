@@ -10,20 +10,40 @@ import { Footer } from '@/components/footer';
 import { SideNav } from '@/components/side-nav';
 import { ReadingTimer } from '@/components/reading-timer';
 import { ParticlesBackground } from '@/components/particles';
+import { db } from '@/lib/db';
+import * as schema from '@/lib/db/schema';
+import { asc } from 'drizzle-orm';
 
 async function getPortfolio() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
-  const apiUrl = `${baseUrl}/api`;
   try {
-    const res = await fetch(`${apiUrl}/portfolio`, {
-      next: { revalidate: 60 },
+    const [settings] = await db.select().from(schema.siteSettings).limit(1);
+    const [summary] = await db.select().from(schema.professionalSummary).limit(1);
+    const skillCategories = await db.query.skillCategories.findMany({
+      with: { skills: { orderBy: [asc(schema.skills.sortOrder)] } },
+      orderBy: [asc(schema.skillCategories.sortOrder)],
     });
-    if (!res.ok) {
-      throw new Error('Failed to fetch data');
-    }
-    return await res.json();
+    const companies = await db.query.companies.findMany({
+      with: {
+        experiences: {
+          with: { bullets: { orderBy: [asc(schema.experienceBullets.sortOrder)] } },
+          orderBy: [asc(schema.experiences.sortOrder)],
+        }
+      },
+      orderBy: [asc(schema.companies.sortOrder)],
+    });
+    const education = await db.select().from(schema.education).orderBy(asc(schema.education.sortOrder));
+    const projects = await db.select().from(schema.projects).orderBy(asc(schema.projects.sortOrder));
+
+    return {
+      settings: settings || null,
+      summary: summary || null,
+      skillCategories,
+      companies,
+      education,
+      projects,
+    };
   } catch (error) {
-    console.warn("Failed to fetch portfolio data (backend might be offline during build):", error);
+    console.error("Failed to fetch portfolio data directly from DB:", error);
     return {
       settings: null,
       summary: null,
