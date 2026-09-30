@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import * as schema from '@/lib/db/schema';
-import { eq } , and } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
